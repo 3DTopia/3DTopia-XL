@@ -1,0 +1,97 @@
+debug: False
+root_data_dir: ./runs
+checkpoint_path:
+global_seed: 42
+
+inference:
+  input_dir: ./assets/examples
+  ddim: 25
+  cfg: 6
+  seed: ${global_seed}
+  precision: fp16
+  export_glb: True
+  decimate: 100000
+  mc_resolution: 256
+  batch_size: 8192
+  remesh: False
+
+image_height: 518
+image_width: 518
+
+model:
+  class_name: models.primsdf.PrimSDF
+  num_prims: 2048
+  dim_feat: 6
+  prim_shape: 8
+  init_scale: 0.05 # useless if auto_scale_init == True
+  sdf2alpha_var: 0.005
+  auto_scale_init: True
+  init_sampling: uniform
+  vae:
+    class_name: models.vae3d_dib.VAE
+    in_channels: ${model.dim_feat}
+    latent_channels: 1
+    out_channels: ${model.vae.in_channels}
+    down_channels: [32, 256]
+    mid_attention: True
+    up_channels: [256, 32]
+    layers_per_block: 2
+    gradient_checkpointing: False
+  vae_checkpoint_path:
+  conditioner:
+    class_name: models.conditioner.image.ImageConditioner
+    num_prims: ${model.num_prims}
+    dim_feat: ${model.dim_feat}
+    prim_shape: ${model.prim_shape}
+    sample_view: False
+    encoder_config:
+      class_name: models.conditioner.image_dinov2.Dinov2Wrapper
+      model_name: dinov2_vitb14_reg
+      freeze: True
+  generator:
+    class_name: models.dit_crossattn.DiT
+    seq_length: ${model.num_prims}
+    in_channels: 68 # equals to model.vae.latent_channels * latent_dim^3
+    condition_channels: 768
+    hidden_size: 1152
+    depth: 28
+    num_heads: 16
+    attn_proj_bias: True
+    cond_drop_prob: 0.1
+    gradient_checkpointing: False
+  latent_nf: 1.0
+  latent_mean: [ 0.0442, -0.0029, -0.0425, -0.0043, -0.4086, -0.2906, -0.7002, -0.0852, -0.4446, -0.6896, -0.7344, -0.3524, -0.5488, -0.4313, -1.1715, -0.0875, -0.6131, -0.3924, -0.7335, -0.3749,  0.4658, -0.0236,  0.8362,  0.3388,  0.0188,  0.5988, -0.1853,  1.1579,  0.6240,  0.0758,  0.9641,  0.6586,  0.6260,  0.2384,  0.7798,  0.8297, -0.6543, -0.4441, -1.3887, -0.0393, -0.9008, -0.8616, -1.7434, -0.1328, -0.8119, -0.8225, -1.8533, -0.0444, -1.0510, -0.5158, -1.1907, -0.5265,  0.2832,  0.6037,  0.5981,  0.5461,  0.4366,  0.4144,  0.7219,  0.5722,  0.5937,  0.5598,  0.9414,  0.7419,  0.2102,  0.3388,  0.4501,  0.5166]
+  latent_std: [0.0219, 0.3707, 0.3911, 0.3610, 0.7549, 0.7909, 0.9691, 0.9193, 0.8218, 0.9389, 1.1785, 1.0254, 0.6376, 0.6568, 0.7892, 0.8468, 0.8775, 0.7920, 0.9037, 0.9329, 0.9196, 1.1123, 1.3041, 1.0955, 1.2727, 1.6565, 1.8502, 1.7006, 0.8973, 1.0408, 1.2034, 1.2703, 1.0373, 1.0486, 1.0716, 0.9746, 0.7088, 0.8685, 1.0030, 0.9504, 1.0410, 1.3033, 1.5368, 1.4386, 0.6142, 0.6887, 0.9085, 0.9903, 1.0190, 0.9302, 1.0121, 0.9964, 1.1474, 1.2729, 1.4627, 1.1404, 1.3713, 1.6692, 1.8424, 1.5047, 1.1356, 1.2369, 1.3554, 1.1848, 1.1319, 1.0822, 1.1972, 0.9916]
+
+diffusion:
+  timestep_respacing:
+  noise_schedule: squaredcos_cap_v2
+  diffusion_steps: 1000
+  parameterization: v
+
+rm:
+  volradius: 10000.0
+  dt: 1.0
+
+optimizer:
+  class_name: torch.optim.AdamW
+  lr: 0.0001
+  weight_decay: 0
+
+scheduler:
+  class_name: dva.scheduler.CosineWarmupScheduler
+  warmup_iters: 3000
+  max_iters: 200000
+
+train:
+  batch_size: 8
+  n_workers: 4
+  n_epochs: 1000
+  log_every_n_steps: 50
+  summary_every_n_steps: 10000
+  ckpt_every_n_steps: 10000
+  amp: False
+  precision: tf32
+
+tag: 3dtopia-xl-sview
+output_dir: ${root_data_dir}/inference/${tag}
