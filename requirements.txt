@@ -20,3 +20,4 @@ ninja
 imageio
 imageio-ffmpeg
 gradio-litmodel3d==0.0.1
+jaxtyping==0.2.31

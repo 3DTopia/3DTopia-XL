@@ -139,29 +139,28 @@ def process(input_cond, input_num_steps, input_seed=42, input_cfg=6.0):
         recon_param = torch.concat([recon_srt_param, recon_feat_param], dim=-1)
         visualize_video_primvolume(config.output_dir, batch, recon_param, 15, rm, device)
         prim_params = {'srt_param': recon_srt_param[0].detach().cpu(), 'feat_param': recon_feat_param[0].detach().cpu()}
-        torch.save({'model_state_dict': prim_params}, "{}/denoised.pt".format(config.output_dir))
+    return output_rgb_video_path, output_prim_video_path, output_mat_video_path, prim_params
 
-    return output_rgb_video_path, output_prim_video_path, output_mat_video_path, gr.update(interactive=True)
-
-def export_mesh(remesh="No", mc_resolution=256, decimate=100000):
+def export_mesh(prim_params, uv_unwrap="Faster", remesh="No", mc_resolution=256):
     # exporting GLB mesh
     output_glb_path = os.path.join(config.output_dir, GRADIO_GLB_PATH)
     if remesh == "No":
         config.inference.remesh = False
     elif remesh == "Yes":
         config.inference.remesh = True
-    config.inference.decimate = decimate
+    if uv_unwrap == "Faster":
+        config.inference.fast_unwrap = True
+    elif uv_unwrap == "Better":
+        config.inference.fast_unwrap = False
     config.inference.mc_resolution = mc_resolution
     config.inference.batch_size = 8192
-    denoise_param_path = os.path.join(config.output_dir, 'denoised.pt')
-    primx_ckpt_weight = torch.load(denoise_param_path, map_location='cpu')['model_state_dict']
-    model_primx.load_state_dict(primx_ckpt_weight)
+    model_primx.load_state_dict(prim_params)
     model_primx.to(device)
     model_primx.eval()
     with torch.no_grad():
         model_primx.srt_param[:, 1:4] *= 0.85
         extract_texmesh(config.inference, model_primx, config.output_dir, device)
-    return output_glb_path, gr.update(visible=True)
+    return output_glb_path, gr.update(visible=True), gr.update(interactive=True), gr.update(value="assets/hdri/metro_noord_1k.hdr")
 
 # gradio UI
 _TITLE = '''3DTopia-XL'''
@@ -179,6 +178,7 @@ _DESCRIPTION = '''
 block = gr.Blocks(title=_TITLE).queue()
 with block:
     current_fg_state = gr.State()
+    prim_param_state = gr.State()
     with gr.Row():
         with gr.Column(scale=1):
             gr.Markdown('# ' + _TITLE)
@@ -191,18 +191,21 @@ with block:
                 input_image = gr.Image(label="image", type='pil')
                 # background removal
                 removal_previewer = gr.Image(label="Background Removal Preview", type='pil', interactive=False)
-            # inference steps
-            input_num_steps = gr.Radio(choices=[25, 50, 100, 200], label="DDIM steps", value=25)
-            # random seed
-            input_cfg = gr.Slider(label="CFG scale", minimum=0, maximum=15, step=0.5, value=6, info="Typically CFG in a range of 4-7")
-            # random seed
-            input_seed = gr.Slider(label="random seed", minimum=0, maximum=10000, step=1, value=42, info="Try different seed if the result is not satisfying as this is a generative model!")
-            # gen button
-            button_gen = gr.Button(value="Generate", interactive=False)
             with gr.Row():
-                input_mc_resolution = gr.Radio(choices=[64, 128, 256], label="MC Resolution", value=128, info="Cube resolution for mesh extraction")
+                # inference steps
+                input_num_steps = gr.Radio(choices=[25, 50, 100, 200], label="DDIM steps", value=25, info="Larger for robustness but slower.")
+                # random seed
+                input_cfg = gr.Slider(label="CFG scale", minimum=0, maximum=15, step=0.5, value=6, info="Typically CFG in a range of 4-7")
+                # random seed
+                input_seed = gr.Slider(label="random seed", minimum=0, maximum=10000, step=1, value=42, info="Try different seed if the result is not satisfying as this is a generative model!")
+            with gr.Row():
+                input_mc_resolution = gr.Radio(choices=[128, 256], label="MC Resolution", value=128, info="Cube resolution for mesh extraction. Larger for better quality but slower.")
                 input_remesh = gr.Radio(choices=["No", "Yes"], label="Remesh", value="No", info="Remesh or not?")
-            export_glb_btn = gr.Button(value="Export GLB", interactive=False)
+                input_unwrap = gr.Radio(choices=["Faster", "Better"], label="UV Unwrap", value="Better", info="UV unwrapping algorithm. Trade-off between quality and speed.")
+            # gen button
+            with gr.Row():
+                button_gen = gr.Button(value="Generate", interactive=False)
+                export_glb_btn = gr.Button(value="Export Current GLB", interactive=False)
 
         with gr.Column(scale=1):
             with gr.Row():
@@ -246,8 +249,9 @@ with block:
                     )
 
     input_image.change(background_remove_process, inputs=[input_image], outputs=[button_gen, current_fg_state, removal_previewer])
-    button_gen.click(process, inputs=[current_fg_state, input_num_steps, input_seed, input_cfg], outputs=[output_rgb_video, output_prim_video, output_mat_video, export_glb_btn])
-    export_glb_btn.click(export_mesh, inputs=[input_remesh, input_mc_resolution], outputs=[output_glb, hdr_row])
+    button_gen.click(process, inputs=[current_fg_state, input_num_steps, input_seed, input_cfg], outputs=[output_rgb_video, output_prim_video, output_mat_video, prim_param_state])
+    prim_param_state.change(export_mesh, inputs=[prim_param_state, input_unwrap, input_remesh, input_mc_resolution], outputs=[output_glb, hdr_row, export_glb_btn, hdr_illumination_file])
+    export_glb_btn.click(export_mesh, inputs=[prim_param_state, input_unwrap, input_remesh, input_mc_resolution], outputs=[output_glb, hdr_row, export_glb_btn, hdr_illumination_file])
     
     gr.Examples(
         examples=[
@@ -255,7 +259,7 @@ with block:
             for f in os.listdir("assets/examples")
         ],
         inputs=[input_image],
-        outputs=[output_rgb_video, output_prim_video, output_mat_video, export_glb_btn],
+        outputs=[output_rgb_video, output_prim_video, output_mat_video, prim_param_state],
         fn=lambda x: process(input_image=x),
         cache_examples=False,
         label='Single Image to 3D PBR Asset'

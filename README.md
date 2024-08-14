@@ -110,3 +110,4 @@ This work is built on many amazing research works and open-source projects, than
 - [nvdiffrast](https://github.com/NVlabs/nvdiffrast)
 - [kiuikit](https://github.com/ashawkey/kiuikit)
 - [Trimesh](https://github.com/mikedh/trimesh)
+- [litmodel3d](https://pypi.org/project/gradio-litmodel3d/)

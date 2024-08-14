@@ -25,8 +25,10 @@ from scipy.ndimage import binary_dilation, binary_erosion
 from sklearn.neighbors import NearestNeighbors
 from utils.meshutils import clean_mesh, decimate_mesh
 from utils.mesh import Mesh
+from utils.uv_unwrap import box_projection_uv_unwrap, compute_vertex_normal
 logger = logging.getLogger("inference.py")
 
+glctx = dr.RasterizeCudaContext()
 
 def remove_background(image: PIL.Image.Image,
     rembg_session = None,
@@ -99,7 +101,7 @@ def extract_texmesh(args, model, output_path, device):
 
     # Meshify
     vertices, triangles = mcubes.marching_cubes(grid.cpu().numpy(), 0.0)
-    
+
     # Resize + recenter
     b_min_np = np.array([-1., -1., -1.])
     b_max_np = np.array([ 1.,  1.,  1.])
@@ -114,23 +116,32 @@ def extract_texmesh(args, model, output_path, device):
     w0 = 1024
     ssaa = 1
     fp16 = True
-    glctx = dr.RasterizeCudaContext(output_db=False)
     v_np = vertices.astype(np.float32)
     f_np = triangles.astype(np.int64)
     v = torch.from_numpy(vertices).float().contiguous().to(device)
-    f = torch.from_numpy(triangles.astype(np.int64)).int().contiguous().to(device)
-    print(f'[INFO] running xatlas to unwrap UVs for mesh: v={v_np.shape} f={f_np.shape}')
-    # unwrap uv in contracted space
-    atlas = xatlas.Atlas()
-    atlas.add_mesh(v_np, f_np)
-    chart_options = xatlas.ChartOptions()
-    chart_options.max_iterations = 0 # disable merge_chart for faster unwrap...
-    pack_options = xatlas.PackOptions()
-    # pack_options.blockAlign = True
-    # pack_options.bruteForce = False
-    atlas.generate(chart_options=chart_options, pack_options=pack_options)
-    vmapping, ft_np, vt_np = atlas[0] # [N], [M, 3], [N, 2]
+    f = torch.from_numpy(triangles.astype(np.int64)).to(torch.int64).contiguous().to(device)
 
+    if args.fast_unwrap:
+        print(f'[INFO] running box-based fast unwrapping to unwrap UVs for mesh: v={v_np.shape} f={f_np.shape}')
+        v_normal = compute_vertex_normal(v, f)
+        uv, indices = box_projection_uv_unwrap(v, v_normal, f, 0.02)
+        indv_v = v[f].reshape(-1, 3)
+        indv_faces = torch.arange(indv_v.shape[0], device=device, dtype=f.dtype).reshape(-1, 3)
+        uv_flat = uv[indices].reshape((-1, 2))
+        v = indv_v.contiguous()
+        f = indv_faces.contiguous()
+        ft_np = f.cpu().numpy()
+        vt_np = uv_flat.cpu().numpy()
+    else:
+        print(f'[INFO] running xatlas to unwrap UVs for mesh: v={v_np.shape} f={f_np.shape}')
+        # unwrap uv in contracted space
+        atlas = xatlas.Atlas()
+        atlas.add_mesh(v_np, f_np)
+        chart_options = xatlas.ChartOptions()
+        chart_options.max_iterations = 0 # disable merge_chart for faster unwrap...
+        pack_options = xatlas.PackOptions()
+        atlas.generate(chart_options=chart_options, pack_options=pack_options)
+        _, ft_np, vt_np = atlas[0] # [N], [M, 3], [N, 2]
     vt = torch.from_numpy(vt_np.astype(np.float32)).float().contiguous().to(device)
     ft = torch.from_numpy(ft_np.astype(np.int64)).int().contiguous().to(device)
     uv = vt * 2.0 - 1.0 # uvs to range [-1, 1]
@@ -143,8 +154,8 @@ def extract_texmesh(args, model, output_path, device):
         h, w = h0, w0
 
     rast, _ = dr.rasterize(glctx, uv.unsqueeze(0), ft, (h, w)) # [1, h, w, 4]
-    xyzs, _ = dr.interpolate(v.unsqueeze(0), rast, f) # [1, h, w, 3]
-    mask, _ = dr.interpolate(torch.ones_like(v[:, :1]).unsqueeze(0), rast, f) # [1, h, w, 1]
+    xyzs, _ = dr.interpolate(v.unsqueeze(0), rast, f.int()) # [1, h, w, 3]
+    mask, _ = dr.interpolate(torch.ones_like(v[:, :1]).unsqueeze(0), rast, f.int()) # [1, h, w, 1]
     # masked query 
     xyzs = xyzs.view(-1, 3)
     mask = (mask > 0).view(-1)

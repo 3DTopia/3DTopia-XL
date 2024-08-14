@@ -10,6 +10,7 @@ inference:
   seed: ${global_seed}
   precision: fp16
   export_glb: True
+  fast_unwrap: False
   decimate: 100000
   mc_resolution: 256
   batch_size: 8192
