@@ -22,15 +22,13 @@ It can generate 3D asset with smooth geometry and PBR materials from single imag
 
 <br>
 
-<tr>
-    <img src="./assets/teaser.gif" width="100%"/>
-</tr>
+https://github.com/user-attachments/assets/6e281d2e-9741-4f81-ae57-c4ce30b36356
 
 </div>
 
 ## News
 
-[08/2024] Hugging Face demo released! [![demo](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue)](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
+[09/2024] Hugging Face demo released! [![demo](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue)](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
 
 [08/2024] Inference code released!
 
@@ -90,6 +88,7 @@ Furthermore, you can modify the inference parameters in [inference_dit.yml](./co
 | `cfg` | 4 - 7 | The scale for Classifer-free Guidance (CFG). |
 | `seed` | Any | Different seeds lead to diverse different results.|
 | `export_glb` | True | Whether to export textured mesh in GLB format after DDIM sampling is over. |
+| `fast_unwrap` | False | Whether to enable fast UV unwrapping algorithm. |
 | `decimate` | 100000 | The max number of faces for mesh extraction. |
 | `mc_resolution` | 256 | The resolution of the unit cube for marching cube. |
 | `remesh` | False | Whether to run retopology after mesh extraction. |
