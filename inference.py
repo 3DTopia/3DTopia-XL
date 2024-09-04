@@ -86,6 +86,22 @@ def resize_foreground(
 def extract_texmesh(args, model, output_path, device):
     # Prepare directory
     ins_dir = output_path
+    # Noise Filter
+    raw_srt_param = model.srt_param.clone()
+    raw_feat_param = model.feat_param.clone()
+    prim_position = raw_srt_param[:, 1:4]
+    prim_scale = raw_srt_param[:, 0:1]
+    dist = torch.sqrt(torch.sum((prim_position[:, None, :] - prim_position[None, :, :]) ** 2, dim=-1))
+    dist += torch.eye(prim_position.shape[0]).to(raw_srt_param)
+    min_dist, min_indices = dist.min(1)
+    dst_prim_scale = prim_scale[min_indices, :]
+    min_scale_converage = prim_scale * 1. + dst_prim_scale * 1.
+    prim_mask = min_dist < min_scale_converage[:, 0]
+    filtered_srt_param = raw_srt_param[prim_mask, :]
+    filtered_feat_param = raw_feat_param[prim_mask, ...]
+    model.srt_param.data = filtered_srt_param
+    model.feat_param.data = filtered_feat_param
+    print(f'[INFO] Mesh Extraction on PrimX: srt={model.srt_param.shape} feat={model.feat_param.shape}')
 
     # Get SDFs
     with torch.no_grad():
@@ -205,6 +221,8 @@ def extract_texmesh(args, model, output_path, device):
 
     target_mesh = Mesh(v=torch.from_numpy(v_np).contiguous(), f=torch.from_numpy(f_np).contiguous(), ft=ft.contiguous(), vt=torch.from_numpy(vt_np).contiguous(), albedo=torch.from_numpy(feats[..., :3]) / 255, metallicRoughness=torch.from_numpy(feats[..., 3:]) / 255)
     target_mesh.write(os.path.join(ins_dir, f'pbr_mesh.glb'))
+    model.srt_param.data = raw_srt_param
+    model.feat_param.data = raw_feat_param
 
 def main(config):
     logging.basicConfig(level=logging.INFO)
