@@ -22,7 +22,7 @@ It can generate 3D asset with smooth geometry and PBR materials from single imag
 
 <br>
 
-https://github.com/user-attachments/assets/6e281d2e-9741-4f81-ae57-c4ce30b36356
+<video controls autoplay src="https://github.com/user-attachments/assets/6e281d2e-9741-4f81-ae57-c4ce30b36356"></video>
 
 </div>
 
