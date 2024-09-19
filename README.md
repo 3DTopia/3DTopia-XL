@@ -18,7 +18,7 @@
 <h5>3DTopia-XL is a 3D diffusion transformer (DiT) operating on primitive-based representation. <br>
 It can generate 3D asset with smooth geometry and PBR materials from single image or text.</h5>
 
-### [Paper](https://arxiv.org/abs/xxxx.xxxxx) | [Project Page](https://frozenburning.github.io/projects/3DTopia-XL/) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
+### [Paper](https://arxiv.org/abs/xxxx.xxxxx) | [Project Page](https://3dtopia.github.io/3DTopia-XL/) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
 
 <br>
 
