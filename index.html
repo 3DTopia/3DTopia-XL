@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>3DTopia-XL</title>
+
+    <meta name="description" content="Project page for 3DTopia-XL: Scaling High-quality 3D Asset Generation via Primitive Diffusion">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!--FACEBOOK-->
+    <meta property="og:image" content="https://xxx/img/teaser-web.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="682">
+    <meta property="og:image:height" content="682">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://xxx"/>
+    <meta property="og:title" content="3DTopia-XL" />
+    <meta property="og:description" content="Project page for 3DTopia-XL: Scaling High-quality 3D Asset Generation via Primitive Diffusion" />
+
+        <!--TWITTER-->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="3DTopia-XL" />
+    <meta name="twitter:description" content="Project page for 3DTopia-XL: Scaling High-quality 3D Asset Generation via Primitive Diffusion" />
+    <meta name="twitter:image" content="https://xxx/img/teaser-web.png" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <!-- <link rel="stylesheet" href="css/app.css"> -->
+    <link rel="stylesheet" href="./css/stylesheet.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    <!-- model viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="container" id="main" style="width: 100%; max-width: 1500px;">
+        <div class="row">
+            <h1 class="col-md-12 text-center">
+                3DTopia-XL: Scaling High-quality 3D Asset Generation via Primitive Diffusion<br>
+                <small>
+                    Technical Report
+                </small>
+            </h1>
+        </div>
+        <div class="row">
+                <div class="col-md-4 col-md-offset-4 text-center">
+                    <ul class="nav nav-pills nav-justified">
+                        <li>
+                            <a href="http://arxiv.org/abs/xxxx.xxxxx">
+                            <image src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5cab99df4998decfbf9e218e_paper-01-p-500.png" height="60px">
+                                <h4><strong>Paper</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://youtu.be/xxxxxxxxx">
+                            <image src="img/youtube_icon.png" height="60px">
+                                <h4><strong>Video</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/3DTopia/3DTopia-XL">
+                            <img src="img/github.png" height="60px">
+                                <h4><strong>Code</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://huggingface.co/spaces/FrozenBurning/3DTopia-XL">
+                                <img src="img/hf-icon.png" height="60px">
+                                    <h4><strong>Demo</strong></h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                        3DTopia-XL scales high-quality 3D asset generation using Diffusion Transformer (DiT) built upon an expressive and efficient 3D representation, <b>PrimX</b>. The denoising process takes 5 seconds to generate a 3D PBR asset from text / image input which is ready for graphics pipeline to use.
+                </p>
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="img/teaser.mp4" type="video/mp4" />
+                </video>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Key Idea: Primitive Diffusion
+                </h3>
+                <p class="text-justify">
+                    To fully utilize the scalability of Diffusion Transformer (DiT), our key idea is a novel 3D representation, namely <b>PrimX</b>. It explicitly encodes the 3D shape, textures, and materials of a textured mesh into a compact N x D tensor. Each token in this representation is a volumetric primitive anchored to the shape surface with voxelized payload to encode SDF, RGB, and materials. Here we visualize the process of denoising PrimX:
+                </p>
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="img/primdiffusion.mp4" type="video/mp4" />
+                </video>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Gallery: Image-to-3D
+                </h3>
+                <p class="text-justify">
+                    We use our singleview conditioned model for image-to-3D generation. 
+                    <br>
+                    The exported 3D asset can be seamless imported into Blender for rendering.
+                </p>
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="img/gallery.mp4" type="video/mp4" />
+                </video>
+                <br><br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Exported GLB Mesh
+                </h3>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/mailbox.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/mushroom.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/ceramic.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/elephant.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            </div>
+            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/cute_horse.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/fruit_elephant.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/hammer.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            <div class="col-md-3">
+                <model-viewer src="img/meshes/ring.glb" style="width: 100%; height: 300px;" auto-rotate="" shadow-intensity="1" camera-controls="" touch-action="pan-y" ar-status="not-presenting"></model-viewer>
+            </div>
+            </div>
+            <br><br>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Full Presentation
+                </h3>
+                <div class="text-center">
+                    <div style="position:relative;padding-top:56.25%;">
+                        <iframe width="560" height="315" src="https://www.youtube.com/xxx" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Acknowledgements
+                </h3>
+                <p class="text-justify">
+                The website template is borrowed from <a href="https://jonbarron.info/mipnerf/">Mip-NeRF</a>
+                </p>
+                <br>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
