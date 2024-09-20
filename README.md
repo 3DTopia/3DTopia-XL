@@ -4,8 +4,8 @@
 
 <div>
 
-<a target="_blank" href="https://arxiv.org/abs/xxxx.xxxxx">
-  <img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b.svg" alt="arXiv Paper"/>
+<a target="_blank" href="https://arxiv.org/abs/2409.12957">
+  <img src="https://img.shields.io/badge/arXiv-2409.12957-b31b1b.svg" alt="arXiv Paper"/>
 </a>
 <a target="_blank" href="https://huggingface.co/spaces/FrozenBurning/3DTopia-XL">
   <img src="https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue" alt="HuggingFace"/>
@@ -18,7 +18,7 @@
 <h5>3DTopia-XL is a 3D diffusion transformer (DiT) operating on primitive-based representation. <br>
 It can generate 3D asset with smooth geometry and PBR materials from single image or text.</h5>
 
-### [Paper](https://arxiv.org/abs/xxxx.xxxxx) | [Project Page](https://3dtopia.github.io/3DTopia-XL/) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
+### [Paper](https://arxiv.org/abs/2409.12957) | [Project Page](https://3dtopia.github.io/3DTopia-XL/) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
 
 <br>
 
@@ -27,10 +27,22 @@ It can generate 3D asset with smooth geometry and PBR materials from single imag
 </div>
 
 ## News
+[09/2024] Technical report released! [![arXiv](https://img.shields.io/badge/arXiv-2409.12957-b31b1b.svg)](https://arxiv.org/abs/2409.12957)
 
 [09/2024] Hugging Face demo released! [![demo](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue)](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
 
 [08/2024] Inference code released!
+
+## Citation
+If you find our work useful for your research, please consider citing this paper:
+```
+@article{chen2024primx,
+  title={3DTopia-XL: High-Quality 3D PBR Asset Generation via Primitive Diffusion},
+  author={Chen, Zhaoxi and Tang, Jiaxiang and Dong, Yuhao and Cao, Ziang and Hong, Fangzhou and Lan, Yushi and Wang, Tengfei and Xie, Haozhe and Wu, Tong and Saito, Shunsuke and Pan, Liang and Lin, Dahua and Liu, Ziwei},
+  journal={arXiv preprint arXiv:2409.12957},
+  year={2024}
+}
+```
 
 ## Installation
 We highly recommend using [Anaconda](https://www.anaconda.com/) to manage your python environment. You can setup the required environment by the following commands:
