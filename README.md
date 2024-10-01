@@ -32,7 +32,7 @@ It can generate 3D asset with smooth geometry and PBR materials from single imag
 
 [09/2024] Hugging Face demo released! [![demo](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue)](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
 
-[08/2024] Inference code released!
+[09/2024] Inference code released!
 
 ## Citation
 If you find our work useful for your research, please consider citing this paper:
@@ -44,6 +44,16 @@ If you find our work useful for your research, please consider citing this paper
   year={2024}
 }
 ```
+
+## TODO List
+
+- [ ] Dataset and captions
+- [ ] Training code
+- [ ] Text-conditioned model
+- [x] Image-conditioned model
+- [x] Inference code
+- [x] Technical report
+- [x] Huggingface demo
 
 ## Installation
 We highly recommend using [Anaconda](https://www.anaconda.com/) to manage your python environment. You can setup the required environment by the following commands:
