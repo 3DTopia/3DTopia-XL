@@ -19,7 +19,7 @@
 <h5>3DTopia-XL is a 3D diffusion transformer (DiT) operating on primitive-based representation. <br>
 It can generate 3D asset with smooth geometry and PBR materials from single image or text.</h5>
 
-### [Paper](https://arxiv.org/abs/2409.12957) | [Project Page](https://3dtopia.github.io/3DTopia-XL/) | [Video](https://youtu.be/nscGSjrwMDw) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
+### [Paper](https://arxiv.org/abs/2409.12957) | [Project Page](https://3dtopia.github.io/3DTopia-XL/) | [Video](https://youtu.be/nscGSjrwMDw) | [Weights](https://huggingface.co/FrozenBurning/3DTopia-XL) | [Hugging Face :hugs:](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL) | [WiseModel](https://www.wisemodel.cn/codes/ZhaoxiChen/3DTopia-XL)
 
 <br>
 
@@ -28,6 +28,8 @@ It can generate 3D asset with smooth geometry and PBR materials from single imag
 </div>
 
 ## News
+[10/2024] [WiseModel](https://www.wisemodel.cn/codes/ZhaoxiChen/3DTopia-XL) demo released! 
+
 [09/2024] Technical report released! [![arXiv](https://img.shields.io/badge/arXiv-2409.12957-b31b1b.svg)](https://arxiv.org/abs/2409.12957)
 
 [09/2024] Hugging Face demo released! [![demo](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Hugging%20Face-blue)](https://huggingface.co/spaces/FrozenBurning/3DTopia-XL)
