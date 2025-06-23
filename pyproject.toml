@@ -1,0 +1,113 @@
+[tool.poetry]
+name = "dva-mvp"
+version = "0.1.0"
+description = "DVA-MVP: Diffusion Model for 3D Generation"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "dva"}, {include = "models"}, {include = "datasets"}, {include = "utils"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+einops = "*"
+omegaconf = "*"
+opencv-python = "*"
+libigl = "*"
+trimesh = "4.2.0"
+pygltflib = "*"
+pymeshlab = "0.2"
+PyMCubes = "*"
+xatlas = "*"
+nvdiffrast = {git = "https://github.com/NVlabs/nvdiffrast/"}
+scikit-learn = "*"
+open-clip-torch = "*"
+triton = "2.1.0"
+rembg = "*"
+gradio = "*"
+tqdm = "*"
+transformers = "4.40.1"
+diffusers = "0.19.3"
+ninja = "*"
+imageio = "*"
+imageio-ffmpeg = "*"
+gradio-litmodel3d = "0.0.1"
+jaxtyping = "0.2.31"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^5.0.0"
+pytest-mock = "^3.14.0"
+pillow = "^10.0.0"
+
+[tool.poetry.scripts]
+test = "pytest:main"
+tests = "pytest:main"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*", "*Tests"]
+python_functions = ["test_*"]
+addopts = """
+    -v
+    --strict-markers
+    --strict-config
+    --cov=dva
+    --cov=models
+    --cov=datasets
+    --cov=utils
+    --cov-branch
+    --cov-report=term-missing:skip-covered
+    --cov-report=html:htmlcov
+    --cov-report=xml:coverage.xml
+"""
+markers = [
+    "unit: marks tests as unit tests (fast, isolated)",
+    "integration: marks tests as integration tests (may require external resources)",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+console_output_style = "progress"
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["dva", "models", "datasets", "utils"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py",
+    "*/setup.py",
+    "*/simple-knn/*",
+    "*/extensions/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
